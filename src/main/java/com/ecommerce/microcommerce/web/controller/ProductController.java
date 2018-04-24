@@ -6,6 +6,10 @@ import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -18,7 +22,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-
+@Api( description = "API pour es opérations CRUD sur les produits.")
 @RestController
 public class ProductController {
 	
@@ -56,6 +60,7 @@ public class ProductController {
     
 
     //Récupérer un produit par son Id
+    @ApiOperation(value = "Récupère un produit grâce à son ID à condition que celui-ci soit en stock!")
     @GetMapping(value="/Produits/{id}")
     public Product afficherUnProduit(@PathVariable int id) {
     	
@@ -67,21 +72,23 @@ public class ProductController {
     	
     }
     
-    @GetMapping(value="produits/prix_greater_than/{prixLimit}")
+    @ApiOperation(value = "Récupère un produit grâce à son PRIX à condition que celui-ci soit superieur au montant demandé !")
+    @GetMapping(value="Produits/prix_greater_than/{prixLimit}")
     public List<Product> afficherUnProduitAvecPrixSupp(@PathVariable int prixLimit) {
     	
     	return productDao.findByPrixGreaterThan(prixLimit);
     	
     }
     
-    @GetMapping(value="produits/prix_lower_than/{prixLimit}")
+    @ApiOperation(value = "Récupère un produit grâce à son PRIX à condition que celui-ci soit inferieur au montant demandé !")
+    @GetMapping(value="Produits/prix_lower_than/{prixLimit}")
     public List<Product> afficherUnProduitAvecPrixInf(@PathVariable int prixLimit) {
     	
     	return productDao.findByPrixLessThan(prixLimit);
     	
     }
     
-    @GetMapping(value = "produits/rechercher/{mot}")
+    @GetMapping(value = "Produits/rechercher/{mot}")
     public List<Product> testeDeRequetes(@PathVariable String mot) {
         return productDao.findByNomLike("%"+mot+"%");
     }
