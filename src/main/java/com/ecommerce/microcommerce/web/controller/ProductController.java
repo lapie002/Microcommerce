@@ -2,6 +2,7 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
+import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -14,6 +15,8 @@ import java.net.URI;
 
 
 import java.util.List;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -42,7 +45,7 @@ public class ProductController {
     	
     	FilterProvider listDeNosFiltres = new SimpleFilterProvider().addFilter("monFiltreDynamique", monFiltre);
     	
-    	MappingJacksonValue produitsFiltres = new MappingJacksonValue(produits); 
+    	MappingJacksonValue produitsFiltres = new MappingJacksonValue(produits);
     	
     	produitsFiltres.setFilters(listDeNosFiltres); 
     	
@@ -56,12 +59,11 @@ public class ProductController {
     @GetMapping(value="/Produits/{id}")
     public Product afficherUnProduit(@PathVariable int id) {
     	
-        //Product product = new Product(id, new String("Aspirateur"), 100 );
-        //return product;
+    	Product product = productDao.findById(id);
     	
-    	//return productDao.ProductfindById(id);
-    	
-    	return productDao.findById(id);
+    	if(product == null) throw new ProduitIntrouvableException("Le produit avec l'id " + id + " est INTROUVABLE. Écran Bleu si je pouvais.");
+    			
+    	return product;
     	
     }
     
@@ -86,7 +88,7 @@ public class ProductController {
     
     
     @PostMapping(value="/Produits")
-    public Product ajouterProduit(@RequestBody Product product){
+    public Product ajouterProduit(@Valid @RequestBody Product product){
     	return productDao.save(product);
     }
     
